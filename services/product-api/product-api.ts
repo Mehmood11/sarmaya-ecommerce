@@ -2,9 +2,21 @@ import { baseApi } from "../base-api";
 
 export const ProductApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    productList: builder.query({
+    allProductList: builder.query({
       query: () => ({
-        url: "products",
+        url: `products`,
+        method: "GET",
+      }),
+    }),
+    productList: builder.query({
+      query: ({ cat }) => ({
+        url: `products/category/${cat}`,
+        method: "GET",
+      }),
+    }),
+    categoriesList: builder.query({
+      query: () => ({
+        url: "products/categories",
         method: "GET",
       }),
     }),
@@ -17,4 +29,9 @@ export const ProductApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useProductListQuery, useSingleProductListQuery } = ProductApi;
+export const {
+  useProductListQuery,
+  useCategoriesListQuery,
+  useSingleProductListQuery,
+  useAllProductListQuery,
+} = ProductApi;

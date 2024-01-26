@@ -1,17 +1,30 @@
 "use client";
-import { useProductListQuery } from "@/services/product-api/product-api";
+import {
+  useAllProductListQuery,
+  useProductListQuery,
+} from "@/services/product-api/product-api";
 import { productArrayFunc } from "@/store/product-slice/product-slice";
 import { useDispatch, useSelector } from "@/store/store";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import toast from "react-hot-toast";
 
 export function ProductList() {
-  const router = useRouter();
+  const router = useSearchParams();
+  console.log(router.get("cat"));
+
   const dispatch = useDispatch();
   const productList = useSelector((state) => state?.product?.productArray);
-  const { data, isLoading }: any = useProductListQuery(null);
+  const { data, isLoading }: any = useProductListQuery({
+    cat: router.get("cat"),
+  });
+  const { data: allProductList }: any = useAllProductListQuery(null);
 
   const addToCart = (product: any) => {
     const filteredArray = productList?.findIndex(
@@ -24,6 +37,9 @@ export function ProductList() {
     } else toast.error("Item already Exists");
   };
 
+  const productListFunc = () => {
+    return router.get("cat") ? data : allProductList;
+  };
   if (isLoading) {
     return (
       <div className="border shadow rounded-md p-4 w-full mx-auto">
@@ -48,7 +64,7 @@ export function ProductList() {
     <div className="px-2">
       <h1 className="mb-3 text-2xl font-semibold">Products</h1>
       <div className="grid grid-cols-4 gap-3 rounded-md">
-        {data?.map((product: any) => (
+        {productListFunc()?.map((product: any) => (
           <div className=" flex flex-col justify-between max-w-sm bg-white border border-gray-200 rounded-lg shadow  dark:border-gray-700">
             <div>
               <img
